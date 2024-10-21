@@ -16,7 +16,7 @@
 📍 Last updated
 
 
-Por ahora lo único que he hecho es un análsis exploratorio del csv con pyspark, lo iré completando cada vez un poquito más al proyecto (no soy de dejar las cosas por la mitad 😉)
+Por ahora lo único que he hecho es un análsis exploratorio del csv con pyspark, lo iré completando cada vez un poquito más al proyecto e iré compartiendo avances. 😀
 
 Dentro de la carpeta 📂 `input data` pueden encontrar el csv de de base, sin realizar cambios.
 
