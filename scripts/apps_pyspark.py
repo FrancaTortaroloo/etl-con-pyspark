@@ -9,7 +9,7 @@ from pyspark.sql.functions import *
 
 #%%
 
-visualizacion = func.leer_archivo("/Users/franca/Documents/GitHub/ETL-con-pyspark/googleplaystore.csv") 
+visualizacion = func.leer_archivo("/Users/franca/Documents/GitHub/ETL-con-pyspark/input data/googleplaystore.csv") 
 print(visualizacion)
 # %%
 
@@ -52,7 +52,7 @@ column_definitions = [
     ("Last Updated", "date")
 ]
 
-ruta = "/Users/franca/Documents/GitHub/ETL-con-pyspark/googleplaystore.csv"  
+ruta = "/Users/franca/Documents/GitHub/ETL-con-pyspark/input data/googleplaystore.csv"  
 app_df = func.read_csv_with_schema(spark, ruta, column_definitions)
 
 #%%
