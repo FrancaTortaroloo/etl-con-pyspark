@@ -56,3 +56,5 @@ ruta = "/Users/franca/Documents/GitHub/ETL-con-pyspark/input data/googleplaystor
 app_df = func.read_csv_with_schema(spark, ruta, column_definitions)
 
 #%%
+guardar_csv = func.exportar_csv(app_df, "/Users/franca/Documents/GitHub/ETL-con-pyspark/output data")
+# %%

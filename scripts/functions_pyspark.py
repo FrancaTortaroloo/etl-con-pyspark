@@ -112,3 +112,8 @@ def read_csv_with_schema(spark, path, column_definitions):
     return app
 
 #%%
+#exportar a csv el df limpio
+
+def exportar_csv(variable, ruta_archivo):
+    # Exporta el DataFrame a CSV
+    variable.write.csv(ruta_archivo, header=True, mode='overwrite')
