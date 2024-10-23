@@ -104,12 +104,6 @@ def exploracion_datos(csv):
     
     print(f"{null_columns_counts}\n") 
     
-    print('____________ VALORES ÚNICOS EN CADA COLUMNA ______________ \n')  
-    
-
-
-
-
 # %%
 def eliminar_duplicados(csv):
     # Contar el número total de filas antes de eliminar duplicados
@@ -130,6 +124,14 @@ def eliminar_duplicados(csv):
 
 #%%
 
+
+
+
+
+
+
+#%%
+'''
 def eliminar_columnas(csv,columns):
     csv_limpio = csv.drop(*columns)
     #verificar que se eliminaron las columnas
@@ -157,3 +159,4 @@ def read_csv_with_schema(spark, path, column_definitions):
 def exportar_csv(variable, ruta_archivo):
     # Exporta el DataFrame a CSV
     variable.write.csv(ruta_archivo, header=True, mode='overwrite')
+'''
