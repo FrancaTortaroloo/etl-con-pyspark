@@ -7,15 +7,35 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 from pyspark.sql.functions import *
 
+
 #%%
 #leer el archivo 
 def leer_archivo(ruta_archivo):
     spark = SparkSession.builder.appName("chanchito-feliz").getOrCreate()
     app = spark.read.csv(path        = ruta_archivo,
                          inferSchema = True, header = True)
-    app.show(5, truncate = True)
+    app.show(20, truncate = True)
     return app
+
+#%%
+'''
+#cambiar los dtypes de las columnas
+
+
+def create_data_schema(column_definitions):
+    data_schema = []
+    type_mapping = {
+        "string": StringType(),
+        "integer": IntegerType(),
+        "date": DateType()
+    }
     
+    for column_name, column_type in column_definitions:
+        data_schema.append(StructField(column_name, type_mapping.get(column_type, StringType()), True))
+    
+    return StructType(fields=data_schema)
+'''
+
 #%%
 
 def exploracion_datos(csv):
@@ -23,16 +43,7 @@ def exploracion_datos(csv):
 
     print(f"El número de filas que tenemos es de {csv.count()}.\nEl número de columnas es de {len(csv.columns)}\n")
 
-    print('_____________ VALORES NULOS DE CADA COLUMNA ______________\n')
-    
-    #app.columns accede a la lista de columnas del df
-    # for c in app.columnas: accede a cada columna del df
-    #funcion col: referirnos a cada columna por su nombre, devuelve true o false, con cast int convierte esos true en 1 y false en 0. Los nulos serian true.  
-    #sum para sumar los valores generados por los nulos de cada columna y se suman para verificar la cantidad
-    
-    nulos = csv.select([sum(col(c).isNull().cast("int")).alias(c) for c in csv.columns])
-    print(nulos.show())
-
+   
     print('____________ DUPLICADOS EN CADA COLUMNA ______________ \n')
     
     #contar numero total de filas 
@@ -55,7 +66,49 @@ def exploracion_datos(csv):
         
     #mostrar columnas duplicadas
 
-    print(f"Las columnas con duplicados son: {', '.join(columnas_con_duplicados)}")
+    print(f"Las columnas con duplicados son: {', '.join(columnas_con_duplicados)}\n")
+    
+    
+    print('____________ NULOS EN CADA COLUMNA ______________ \n')
+    
+    
+    null_columns_counts = list()
+    numRows = csv.count()
+    
+    for k in csv.columns:
+        # Imprimir la columna que se está evaluando
+        print(f"Procesando columna: {k}")
+        
+        # Verificar el tipo de la columna para aplicar isnan solo a numéricos
+        column_type = dict(csv.dtypes)[k]
+        print(f"Tipo de dato de {k}: {column_type}")
+        
+        if column_type in ['int', 'double', 'float']:
+            nullRows = csv.filter(
+                col(k).isNull() | isnan(col(k))
+            ).count()
+        elif column_type == 'string':
+            nullRows = csv.filter(
+                col(k).isNull() | (col(k) == "") | (length(col(k)) == 0)
+            ).count()
+        else:
+            nullRows = csv.filter(col(k).isNull()).count()
+        
+        nonNullRows = numRows - nullRows  # Cálculo de valores no nulos
+        
+        print(f"Nulos en {k}: {nullRows}, No nulos en {k}: {nonNullRows}")  # Imprimir resultados
+        
+        if nullRows > 0:
+            temp = (k, nullRows, (nullRows / numRows) * 100)
+            null_columns_counts.append(temp)
+    
+    print(f"{null_columns_counts}\n") 
+    
+    print('____________ VALORES ÚNICOS EN CADA COLUMNA ______________ \n')  
+    
+
+
+
 
 # %%
 def eliminar_duplicados(csv):
@@ -76,6 +129,7 @@ def eliminar_duplicados(csv):
         print("No se encontraron duplicados para eliminar.")
 
 #%%
+
 def eliminar_columnas(csv,columns):
     csv_limpio = csv.drop(*columns)
     #verificar que se eliminaron las columnas
@@ -83,21 +137,7 @@ def eliminar_columnas(csv,columns):
     print(csv_limpio.limit(4).toPandas())
     
 #%%
-#cambiar los dtypes de las columnas
 
-
-def create_data_schema(column_definitions):
-    data_schema = []
-    type_mapping = {
-        "string": StringType(),
-        "integer": IntegerType(),
-        "date": DateType()
-    }
-    
-    for column_name, column_type in column_definitions:
-        data_schema.append(StructField(column_name, type_mapping.get(column_type, StringType()), True))
-    
-    return StructType(fields=data_schema)
 
 def read_csv_with_schema(spark, path, column_definitions):
     # Crear el esquema de datos
