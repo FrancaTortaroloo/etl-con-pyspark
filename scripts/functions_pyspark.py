@@ -125,11 +125,6 @@ def eliminar_duplicados(csv):
 #%%
 
 
-
-
-
-
-
 #%%
 '''
 def eliminar_columnas(csv,columns):
