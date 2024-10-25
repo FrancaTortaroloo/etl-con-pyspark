@@ -127,31 +127,3 @@ def eliminar_duplicados(csv):
 
 #%%
 '''
-def eliminar_columnas(csv,columns):
-    csv_limpio = csv.drop(*columns)
-    #verificar que se eliminaron las columnas
-
-    print(csv_limpio.limit(4).toPandas())
-    
-#%%
-
-
-def read_csv_with_schema(spark, path, column_definitions):
-    # Crear el esquema de datos
-    final_struc = create_data_schema(column_definitions)
-    
-    # Leer el archivo CSV
-    app = spark.read.csv(path=path, schema=final_struc, header=True)
-    
-    # Imprimir el esquema
-    app.printSchema()
-    
-    return app
-
-#%%
-#exportar a csv el df limpio
-
-def exportar_csv(variable, ruta_archivo):
-    # Exporta el DataFrame a CSV
-    variable.write.csv(ruta_archivo, header=True, mode='overwrite')
-'''
