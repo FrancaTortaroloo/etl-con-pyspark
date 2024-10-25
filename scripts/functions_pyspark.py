@@ -1,7 +1,7 @@
 #%%importamos librerias que necesitamos para la lectura, conversión y limpieza de datos
 
 import pyspark
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession,DataFrame
 
 
 from pyspark.sql.types import *
@@ -17,24 +17,6 @@ def leer_archivo(ruta_archivo):
     app.show(20, truncate = True)
     return app
 
-#%%
-'''
-#cambiar los dtypes de las columnas
-
-
-def create_data_schema(column_definitions):
-    data_schema = []
-    type_mapping = {
-        "string": StringType(),
-        "integer": IntegerType(),
-        "date": DateType()
-    }
-    
-    for column_name, column_type in column_definitions:
-        data_schema.append(StructField(column_name, type_mapping.get(column_type, StringType()), True))
-    
-    return StructType(fields=data_schema)
-'''
 
 #%%
 
@@ -106,6 +88,8 @@ def exploracion_datos(csv):
     
 # %%
 def eliminar_duplicados(csv):
+    
+    print('____________ ELIMINAR DUPLICADOS ______________ \n')
     # Contar el número total de filas antes de eliminar duplicados
     total_filas_antes = csv.count()
 
@@ -120,10 +104,96 @@ def eliminar_duplicados(csv):
     if total_filas_antes > total_filas_despues:
         print(f"Duplicados eliminados. Cantidad de filas antes: {total_filas_antes}, cantidad de filas después: {total_filas_despues}")
     else:
-        print("No se encontraron duplicados para eliminar.")
+        print("No se encontraron duplicados para eliminar.")  
+        
+    return csv_sin_duplicados
+
+#%%
+def corregir_rating(app: DataFrame):
+    print('_____________ LIMPIAR LOS REGISTROS EN LA COLUMNA RATING  ____________\n')
+    
+    app = app.withColumn(
+        'Rating', 
+        when(col('Rating') == ' navigation', None)  # Reemplazar 'navigation' con None (equivalente a NaN)
+        .when(col('Rating') == 'Body', None)       # Reemplazar 'Body' con None
+        .when(col('Rating') == '19', '1.9')        # Reemplazar '19' con '1.9'
+        .when(col('Rating') == 'NaN', None)        # Reemplazar 'NaN' con None
+        .otherwise(col('Rating'))                  # Mantener los demás valores iguales
+    )
+    
+    return app
+#%%
+
+def corregir_reviews(app: DataFrame):
+    
+    print('_____________ CORREGIR LOS REGISTROS EN LA COLUMNA REVIEWS Y CAMBIAR EL DTYPE A DOUBLE ____________\n')
+
+    # convertir a número y manejar errores
+    app = app.withColumn(
+        'Reviews',
+        when(col('Reviews').cast('double').isNotNull(), col('Reviews').cast('double'))
+        .otherwise(None)  # Reemplaza valores no numéricos con None
+    )
+
+    # Eliminar filas con valores None en 'Reviews'
+    app = app.filter(col('Reviews').isNotNull())
+    
+    return app
 
 #%%
 
+def corregir_size(app: DataFrame):
+
+    print('_____________ CORREGIR LOS REGISTROS EN LA COLUMNA SIZE Y CAMBIAR EL DTYPE A LONG ____________\n')
+
+
+    app = app.withColumn('Size', 
+        when(col('Size').endswith('M'), 
+            (trim(regexp_replace(col('Size'), 'M', '')).cast('double') * 1000000).cast('long'))  # Convertir M a bytes
+        .when(col('Size').endswith('K'), 
+            (trim(regexp_replace(col('Size'), 'K', '')).cast('double') * 1000).cast('long'))  # Convertir K a bytes
+        .when(col('Size').endswith('k'), 
+            (trim(regexp_replace(col('Size'), 'k', '')).cast('double') * 1000).cast("long"))  # Convertir k a bytes
+        .otherwise(None)  # Para manejar otros casos o datos no válidos
+    )
+
+    return app
+
 
 #%%
-'''
+
+def corregir_installs(app: DataFrame): 
+    print('_____________ CORREGIR LOS REGISTROS EN LA COLUMNA INSTALLS Y CAMBIAR EL DTYPE A LONG ____________\n')
+
+    app = app.withColumn('Installs', 
+        when(col('Installs') == 'Free', None)  # Reemplazar "Free" con None
+        .otherwise(
+            regexp_replace(regexp_replace(col('Installs'), ',', ''), r'\+', '')  # Quitar comas y signo "+"
+        ).cast('int'))  # Convertir a entero
+
+    return app
+# %%
+
+def corregir_price(app: DataFrame):
+    print('_____________ CORREGIR LOS REGISTROS EN LA COLUMNA PRICE Y CAMBIAR EL DTYPE A DOUBLE ____________\n')
+
+    # Quitar el signo $ de la columna 'Price'
+    app = app.withColumn('Price', regexp_replace(col('Price'), '\\$', ''))
+
+    # Reemplazar registros que contengan 'M', 'Varies with device' y 'Everyone' con None
+    app = app.withColumn('Price', 
+                         when(col('Price').contains('M'), None)  # Reemplazar 'M' con None
+                         .when(col('Price') == 'Varies with device', None)  # Reemplazar 'Varies with device' con None
+                         .when(col('Price') == 'Everyone', None)  # Reemplazar 'Everyone' con None
+                         .otherwise(col('Price')))
+
+    # Convertir la columna 'Price' a tipo numérico (double)
+    app = app.withColumn('Price', col('Price').cast('double'))
+
+    print("10 valores aleatorios de 'Price' después de la transformación:")
+    app.select('Price').orderBy(rand()).limit(10).show()
+    
+    return app
+
+
+#%%
