@@ -2,11 +2,12 @@
 
 import pyspark
 from pyspark.sql import SparkSession,DataFrame
-
-
 from pyspark.sql.types import *
 from pyspark.sql.functions import *
-
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pyspark.sql.functions as F
 
 #%%
 #leer el archivo 
@@ -195,5 +196,164 @@ def corregir_price(app: DataFrame):
     
     return app
 
+#%%
+
+def calcular_distribucion_ratings(app: DataFrame):
+    
+    # Seleccionar la columna 'Rating' y convertirla a un DataFrame de pandas
+    df_ratings = app.select('Rating').toPandas()
+
+    # Convertir 'Rating' a tipo numérico, forzando errores a NaN y eliminándolos
+    df_ratings['Rating'] = pd.to_numeric(df_ratings['Rating'], errors='coerce')
+    df_ratings = df_ratings.dropna(subset=['Rating'])
+
+    # Definir los intervalos personalizados y las etiquetas
+    bins = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
+    labels = ['1.0 - 1.5', '1.6 - 2.0', '2.1 - 2.5', '2.6 - 3.0', '3.1 - 3.5', '3.6 - 4.0', '4.1 - 4.5', '4.6 - 5.0']
+
+    # Agrupar los datos en los intervalos definidos
+    df_ratings['RatingGroup'] = pd.cut(df_ratings['Rating'], bins=bins, labels=labels)
+    rating_counts = df_ratings['RatingGroup'].value_counts().sort_index()
+    
+    return rating_counts
+
+#%% 
+
+def graficar_distribucion_ratings(app: DataFrame):
+
+    rating_counts = calcular_distribucion_ratings(app)
+    
+    # Configurar el tamaño del gráfico
+    plt.figure(figsize=[10, 6])
+
+    # Crear el histograma de ratings
+    rating_counts.plot(kind='bar', color='skyblue')
+    plt.title('Distribución de ratings')
+    plt.xlabel('Intervalo de ratings')
+    plt.ylabel('Frecuencia')
+    plt.xticks(rotation=45)
+    plt.show()
+
+    print('En este gráfico se puede notar claramente que la mayor cantidad de votos de rating se sitúa en el rango de 4.1 a 4.5')
 
 #%%
+
+#Seleccionar columnas relevantes
+#covnertir a pandas para poder graficar
+
+def matriz_correlacion(app: DataFrame):
+    
+    print('_____________ Matriz de correlación ____________\n')
+    
+    app_grafico = app.select('Rating', 'Reviews', 'Size').toPandas()
+
+
+    #Calcular matriz de correlación
+
+    correlacion = app_grafico[['Rating', 'Reviews','Size']].corr()
+
+    #Visualizar la matriz de correlación
+
+    plt.figure(figsize=(8,6))
+    sns.heatmap(correlacion, annot = True, cmap= 'coolwarm', fmt = ".2f")
+    plt.title("Matriz de correlación entre Rating, Reviews, Size")
+    plt.show()
+    
+    print("En el gráfico se puede apreciar que el comportamiento de las variables no tienen relación entre ellas")
+#%%
+def agg_categoria (df, group_column = 'Category', column_installs = 'Installs', column_rating = 'rating' ):
+    
+    print('_____________ Agrupar para graficar las columnas que me interesan analizar y convertir a df para poder graficar ____________\n')
+    
+    app_agg = df.groupBy(group_column).agg(
+        F.sum(column_installs).alias('total_installs'),
+        F.avg(column_rating).alias('rating_promedio')
+    )
+    
+    #convertir a df graficar
+    pd_app_agg = app_agg.toPandas()
+    
+    return pd_app_agg
+
+#%% 
+def grafico_install_category(pd_df,column_installs = 'total_installs', category_column = 'Category'):
+    plt.figure(figsize = (14,20))
+    
+    #grafico
+    
+    plt.subplot(1,2,1)
+    sns.barplot(
+        data = pd_df.sort_values(column_installs, ascending = False),
+        x = column_installs,
+        y = category_column,
+        palette = 'viridis'
+    )
+    plt.title('Categoría con más installs')
+    plt.xlabel('Total de installs')
+    plt.ylabel(category_column)
+    
+    plt.show()
+#%%
+def plot_categoria_promedio(pd_df, column_rating = 'rating_promedio', column_category = 'Category'):
+    plt.figure(figsize = (20,15))
+    
+    #grafico
+    plt.subplot(1,2,2)
+    sns.barplot(
+        data = pd_df.sort_values(column_rating, ascending = False),
+        x = column_rating,
+        y = column_category,
+        palette = 'viridis'
+    )
+    plt.title('Categoría con mejor rating promedio')
+    plt.xlabel('Promedio de rating')
+    plt.ylabel(column_category)
+    
+    plt.show()
+#%%
+def agg_installs_rating(df, column_install = 'Installs', column_rating = 'Rating', top_n = 5):
+    mas_installs = df.orderBy(F.desc(column_install)).limit(top_n)
+    mas_rating= df.orderBy(F.desc(column_rating)).limit(top_n)
+    
+    #convertir a df para graficar
+    pd_installs = mas_installs.toPandas()
+    pd_rating = mas_rating.toPandas()
+    
+    return pd_installs, pd_rating
+#%%
+
+def app_mas_installs(pd_df, app_column = 'App', column_install = 'Installs'):
+    plt.figure(figsize=(12,6))
+    sns.barplot(
+        data = pd_df,
+        x = app_column,
+        y = column_install,
+        palette = 'viridis'
+    )
+    plt.title('Top 5 apps más instaladas')
+    plt.xlabel('App')
+    plt.ylabel('Total de installs')
+    plt.show()
+
+#%%
+def top_app_rating(pd_df, column_rating = 'Rating', app_column = 'App'):
+    plt.figure(figsize=(12,6))
+    sns.barplot(
+        data = pd_df,
+        x = column_rating,
+        y = app_column,
+        palette = 'viridis'
+    )    
+    plt.title('Top 5 apps con mejor rating')
+    plt.xlabel('Rating promedio')
+    plt.ylabel('Aplicación')
+    plt.show()
+    
+def conclusion_final():
+    print('Con todo lo analizado hasta ahora, se puede llegar a la conclusión que los ratings de \
+        las apps se concentran entre el puntaje 4.1 a 4.5, la categoria on mejor rating son las de \
+        eventos, dentro de esta categoría se encuentran las apps para organizar eventos o tarjetas \
+        de invitación a los mismos. Por otro lado, las 5 apps con mejor rating (todas con un puntaje de 5) \
+        pertenecen a diferentes categorías. Las categorías con mejor rating. \
+        Por último, las 5 apps más instaladas son google photos, hangouts, gmail app, google + \
+        y google drive, todas pertenecen a la categoría communication.')
