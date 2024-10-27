@@ -65,3 +65,5 @@ top_rating = func.top_app_rating(pd_rating)
 #%%
 pd_rating[['App', 'Rating','Category']]
 #%%
+conclusion = func.conclusion_final()
+#%%

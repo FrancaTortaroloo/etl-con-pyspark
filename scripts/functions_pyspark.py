@@ -350,10 +350,14 @@ def top_app_rating(pd_df, column_rating = 'Rating', app_column = 'App'):
     plt.show()
     
 def conclusion_final():
-    print('Con todo lo analizado hasta ahora, se puede llegar a la conclusión que los ratings de \
-        las apps se concentran entre el puntaje 4.1 a 4.5, la categoria on mejor rating son las de \
-        eventos, dentro de esta categoría se encuentran las apps para organizar eventos o tarjetas \
-        de invitación a los mismos. Por otro lado, las 5 apps con mejor rating (todas con un puntaje de 5) \
-        pertenecen a diferentes categorías. Las categorías con mejor rating. \
-        Por último, las 5 apps más instaladas son google photos, hangouts, gmail app, google + \
-        y google drive, todas pertenecen a la categoría communication.')
+    print("""Con todo lo analizado hasta ahora, se puede llegar a la conclusión que los ratings de 
+        las apps se concentran entre el puntaje 4.1 a 4.5, la categoria con mejor rating son las de 
+        eventos, dentro de esta categoría se encuentran las apps para organizar eventos o tarjetas 
+        de invitación a los mismos. 
+            Por otro lado, las 5 apps con mejor rating (todas con un puntaje de 5) 
+        pertenecen a diferentes categorías. Las categorías con mejor rating. 
+            Por último, las 5 apps más instaladas son google photos, hangouts, gmail app, google + 
+        y google drive, todas pertenecen a la categoría communication.
+            Para finalizar, viendo el mapa de correlación y todos estos resultados se puede intuir que las 
+        variables no tienen relación entre sí, no dependen entre ellas, por lo tanto no se puede 
+        notar un patrón de comportamiento.""")
