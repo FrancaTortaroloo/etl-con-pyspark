@@ -44,6 +44,6 @@ Por último, las 5 apps más instaladas son google photos, hangouts, gmail app, 
 ![Apps más instaladas](https://github.com/FrancaTortaroloo/etl-con-pyspark/blob/main/assets/top%205%20apps%20m%C3%A1s%20instaladas.png)
 
 
-Para finalizar, viendo el mapa de correlación y todos estos resultados, se puede intuir que las variables no tienen relación entre sí, no dependen entre ellas, por lo tanno se puede notar un patrón de comportamiento.
+Para finalizar, viendo el mapa de correlación y todos estos resultados, se puede intuir que las variables no tienen relación entre sí, no dependen entre ellas, por lo tanto no se puede notar un patrón de comportamiento.
 
 ![Heatmap](https://github.com/FrancaTortaroloo/etl-con-pyspark/blob/main/assets/heatmap.png)
