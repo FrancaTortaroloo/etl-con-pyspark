@@ -1,17 +1,18 @@
 ## Hello! In this project, I want to put PySpark into practice, the Apache Spark interface for Python. 🤓
 
 ### To do this, I have chosen a CSV file about applications from the Google Play Store, which contains the following information:
-📍 App (app name)
-📍 Category
-📍 Rating
-📍 Size
-📍 Reviews
-📍 Installs (number)
-📍 Type
-📍 Price
-📍 Content Rating
-📍 Genre
-📍 Last updated
+
+📍 App (app name) \
+📍 Category\
+📍 Rating\
+📍 Size\
+📍 Reviews\
+📍 Installs (number)\
+📍 Type\
+📍 Price\
+📍 Content Rating\
+📍 Genre\
+📍 Last updated\
 
 So far, I have only performed an exploratory analysis of the CSV using PySpark. I will keep adding more to the project and sharing updates. 😀
 
