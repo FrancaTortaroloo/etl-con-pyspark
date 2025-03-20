@@ -12,7 +12,7 @@
 📍 Price\
 📍 Content Rating\
 📍 Genre\
-📍 Last updated\
+📍 Last updated
 
 So far, I have only performed an exploratory analysis of the CSV using PySpark. I will keep adding more to the project and sharing updates. 😀
 
