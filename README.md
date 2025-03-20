@@ -1,3 +1,49 @@
+## Hello! In this project, I want to put PySpark into practice, the Apache Spark interface for Python. 🤓
+
+### To do this, I have chosen a CSV file about applications from the Google Play Store, which contains the following information:
+📍 App (app name)
+📍 Category
+📍 Rating
+📍 Size
+📍 Reviews
+📍 Installs (number)
+📍 Type
+📍 Price
+📍 Content Rating
+📍 Genre
+📍 Last updated
+
+So far, I have only performed an exploratory analysis of the CSV using PySpark. I will keep adding more to the project and sharing updates. 😀
+
+Inside the 📂 input data folder, you can find the original CSV file without any modifications.
+
+Inside the 📂 scripts folder, there are two Python files. The apps_pyspark.py file processes the downloaded data and generates clean and transformed files.
+
+Final Conclusion
+Based on the analysis so far, it can be concluded that app ratings are mostly concentrated between scores of 4.1 and 4.5.
+
+![Ratings](https://github.com/FrancaTortaroloo/etl-con-pyspark/blob/main/assets/rating.png)
+
+The category with the highest average rating is "Events," which includes apps for organizing events or creating invitation cards.
+
+![Categoría con mejor promedio de rating](https://github.com/FrancaTortaroloo/etl-con-pyspark/blob/main/assets/categor%C3%ADa%20rating%20promedio.png)
+
+On the other hand, these are the top 5 highest-rated apps (all with a score of 5), belonging to different categories.
+
+![Apps con mejor rating](https://github.com/FrancaTortaroloo/etl-con-pyspark/blob/main/assets/top%205%20apps%20con%20mejor%20rating.png)
+
+![Apps y sus Categorías](https://github.com/FrancaTortaroloo/etl-con-pyspark/blob/main/assets/App%20-%20categor%C3%ADa%20-%20rating.png)
+
+Lastly, the 5 most installed apps are Google Photos, Hangouts, Gmail App, Google+, and Google Drive, all of which belong to the "Communication" category.
+
+![Apps más instaladas](https://github.com/FrancaTortaroloo/etl-con-pyspark/blob/main/assets/top%205%20apps%20m%C3%A1s%20instaladas.png)
+
+To conclude, by analyzing the correlation heatmap and these results, it can be inferred that the variables do not have a significant relationship with each other. They are independent, and therefore, no clear behavioral pattern can be observed.
+
+![Heatmap](https://github.com/FrancaTortaroloo/etl-con-pyspark/blob/main/assets/heatmap.png)
+
+---------------------------------------------------------------
+
 ## Hola! En el siguiente proyecto quiero poner en práctica PySpark, la interfaz de Apache Spark en Python. 🤓
 
 ### Para ello he escogido un csv sobre aplicaciones de la app store de google que contiene la siguiente información
